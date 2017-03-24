@@ -1,0 +1,3 @@
+[
+	{"description":"Order a pizza","id":"order_a_pizza","entries":[{"value":[{"text":"can i have a pizza "},{"text":"margherita","entity":"pizza_type"},{"text":" ?"}]},{"value":[{"text":"a pizza "},{"text":"margherita","entity":"pizza_type"},{"text":", please !"}]}]}
+]

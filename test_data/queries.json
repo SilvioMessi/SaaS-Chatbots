@@ -1,0 +1,6 @@
+[
+	{"query":"Can i have a pizza margherita?","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
+	{"query":"A pizza margherita, please!","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
+	{"query":"How many pizzas?","intents":["order_a_pizza"],"entities":[]}
+
+]

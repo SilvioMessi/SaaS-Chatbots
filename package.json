@@ -1,0 +1,11 @@
+{
+	"name": "saas_chatbots,
+	"version": "0.0.1",
+	"description": "",
+	"author": "Silvio Messi <messisilvio@gmail.com>",
+	"main": "js/main.js",
+	"dependencies": {
+		"request": "2.80.0",
+		"bluebird": "3.5.0"
+	}
+}

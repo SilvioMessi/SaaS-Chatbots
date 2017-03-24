@@ -1,0 +1,3 @@
+[
+	{"description":"A type of pizza","id":"pizza_type","entries":[{"value":"Margherita","synonyms":["margherita"]},{"value":"Americana","synonyms":["americana","wurstel e patatine"]},{"value":"Prosciutto","synonyms":["prosciutto"]}]}
+]
