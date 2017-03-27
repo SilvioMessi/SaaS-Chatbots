@@ -3,6 +3,7 @@ var Promise = require('bluebird');
 var request = require('request');
 
 var API_BASE_URL = 'https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}/versions/{versionId}/';
+var MESSAGE_MEANING_ENDPOINT = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{appId}';
 var VERSION_ID = '0.1';
 var APP_ID = config.luis.AppId;
 var AUTH_HEADER = {
@@ -189,6 +190,30 @@ function trainApp() {
 			if (!error && response.statusCode === 202) {
 				resolve();
 			} else {
+				reject(body);
+			}
+		});
+	});
+}
+
+function messageMeaning(query) {
+	return new Promise(function (resolve, reject){
+		var queryParameters = {
+			q : query,
+			'subscription-key' : config.luis.SubscriptionKey,
+			timezoneOffset:'1.0',
+			verbose:true
+		};
+		var url = MESSAGE_MEANING_ENDPOINT.replace('{appId}', APP_ID);
+		var requestOptions = {
+			url :url ,
+			qs : queryParameters
+		};
+		request(requestOptions,function(error, response, body){
+			if (!error && response.statusCode === 200) {
+				resolve(JSON.parse(body));
+			}
+			else{
 				reject(body);
 			}
 		});
