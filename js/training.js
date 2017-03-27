@@ -17,6 +17,7 @@ function trainingEntities() {
 			var luisEntity = luis.createEntity(genericEntity);
 			newEntitiesPromises.push(luis.newElement(luisEntity));
 		}
+		newEntitiesPromises.push(luis.createPrebuiltEntities());
 		Promise.all(newEntitiesPromises).then(function(response) {
 			resolve(response);
 		}, function(error) {
@@ -64,6 +65,9 @@ function trainingExamples() {
 function training() {
 	apiAi.deleteAllElements(true).then(function(result) {
 		console.log('API intents deleted!');
+	}, function(rejected) {
+		console.log(rejected);
+	}).delay(2000).then(function(result) {
 		return apiAi.deleteAllElements();
 	}, function(rejected) {
 		console.log(rejected);
@@ -74,15 +78,17 @@ function training() {
 		console.log(rejected);
 	}).then(function(result) {
 		console.log('WIT intents & entities deleted!');
-		return luis.deleteAllElements(true);
+		return luis.deleteAllElements('intent');
 	}, function(rejected) {
 		console.log(rejected);
-	}).then(function(result) {
-		console.log('LUIS intents deleted!');
-		return luis.deleteAllElements();
-	}, function(rejected) {
-		console.log(rejected);
-	}).then(function(result) {
+	}).then(
+			function(result) {
+				console.log('LUIS intents deleted!');
+				return Promise.all([ luis.deleteAllElements('entity'),
+						luis.deleteAllElements('prebuiltEntity') ]);
+			}, function(rejected) {
+				console.log(rejected);
+			}).then(function(result) {
 		console.log('LUIS entities deleted!');
 		return trainingEntities();
 	}, function(rejected) {

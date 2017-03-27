@@ -1,6 +1,7 @@
 var config = require('./config');
 var Promise = require('bluebird');
 var request = require('request');
+var prebuiltEntities = require('./prebuilt_entities');
 
 var API_BASE_URL = 'https://api.api.ai/v1/';
 var CLIENT_AUTH_HEADER = {
@@ -101,12 +102,15 @@ function createIntent(genericIntent) {
 		var data = [];
 		for (var index_value = 0; index_value < entry.value.length; ++index_value) {
 			if (entry.value[index_value].hasOwnProperty('entity')) {
+				var entityName = entry.value[index_value].entity;
+				if (entry.value[index_value].prebuilt){
+					entityName = prebuiltEntities[entityName].API;
+				}
 				data.push({
 					'text' : entry.value[index_value].text,
-					'alias' : entry.value[index_value].entity,
-					'meta' : '@' + entry.value[index_value].entity
+					'alias' : entityName,
+					'meta' : '@' + entityName
 				});
-
 			} else {
 				data.push({
 					'text' : entry.value[index_value].text

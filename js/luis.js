@@ -1,6 +1,7 @@
 var config = require('./config');
 var Promise = require('bluebird');
 var request = require('request');
+var prebuiltEntities = require('./prebuilt_entities');
 
 var API_BASE_URL = 'https://westus.api.cognitive.microsoft.com/luis/api/v2.0/apps/{appId}/versions/{versionId}/';
 var MESSAGE_MEANING_ENDPOINT = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/{appId}';
@@ -11,14 +12,21 @@ var AUTH_HEADER = {
 	'Content-Type' : 'application/json'
 };
 var ENTITIES_ENDPOINT = 'entities';
+var PREBUILT_ENTITIES_ENDPOINT = 'prebuilts';
 var INTENTS_ENDPOINT = 'intents';
 var EXAMPLES_ENDPOINT = 'example';
 var TRAIN_ENDPOINT = 'train';
 
-function getElements(intent) {
+function getElements(elementType) {
 	return new Promise(function(resolve, reject) {
-		var url = API_BASE_URL + ENTITIES_ENDPOINT;
-		if (intent){
+		var url = '';
+		if (elementType === 'entity'){
+			url = API_BASE_URL + ENTITIES_ENDPOINT;
+		}
+		else if (elementType === 'prebuiltEntity'){
+			url = API_BASE_URL + PREBUILT_ENTITIES_ENDPOINT;
+		}
+		else if (elementType === 'intent'){
 			url = API_BASE_URL + INTENTS_ENDPOINT;
 		}
 		url = url.replace('{appId}', APP_ID);
@@ -37,10 +45,16 @@ function getElements(intent) {
 	});
 }
 
-function deleteElement(elementId, intent) {
+function deleteElement(elementId, elementType) {
 	return new Promise(function (resolve, reject){
-		var url = API_BASE_URL + ENTITIES_ENDPOINT;
-		if (intent){
+		var url = '';
+		if (elementType === 'entity'){
+			url = API_BASE_URL + ENTITIES_ENDPOINT;
+		}
+		else if (elementType === 'prebuiltEntity'){
+			url = API_BASE_URL + PREBUILT_ENTITIES_ENDPOINT;
+		}
+		else if (elementType === 'intent'){
 			url = API_BASE_URL + INTENTS_ENDPOINT;
 		}
 		url = url.replace('{appId}', APP_ID);
@@ -65,12 +79,12 @@ function deleteElement(elementId, intent) {
 	});
 }
 
-function deleteAllElements(intent){
+function deleteAllElements(elementType){
 	return new Promise(function (resolve, reject){
-		getElements(intent).then(function(elements) {
+		getElements(elementType).then(function(elements) {
 			var deleteElementsPromises = [];
 			for (var index=0; index < elements.length; index++){
-				deleteElementsPromises.push(deleteElement(elements[index].id, intent));
+				deleteElementsPromises.push(deleteElement(elements[index].id, elementType));
 			}
 			Promise.all(deleteElementsPromises).
 			then(function(response){resolve(response);}, 
@@ -132,6 +146,32 @@ function newElement(element, intent) {
 			url : url,
 			headers : AUTH_HEADER,
 			body : JSON.stringify(element)
+		};
+		request.post(requestOptions, function(error, response, body) {
+			if (!error && response.statusCode === 201) {
+				resolve(JSON.parse(body));
+			} else {
+				reject(body);
+			}
+		});
+	});
+}
+
+function createPrebuiltEntities() {
+	return new Promise(function(resolve, reject) {
+		var prebuiltEntitiesArray = [];
+		for (var entity in prebuiltEntities){
+		    if (prebuiltEntities.hasOwnProperty(entity)) {
+		    	prebuiltEntitiesArray.push(prebuiltEntities[entity].LUIS);
+		    }
+		}
+		var url = API_BASE_URL + PREBUILT_ENTITIES_ENDPOINT;
+		url = url.replace('{appId}', APP_ID);
+		url = url.replace('{versionId}', VERSION_ID);
+		var requestOptions = {
+			url : url,
+			headers : AUTH_HEADER,
+			body : JSON.stringify(prebuiltEntitiesArray)
 		};
 		request.post(requestOptions, function(error, response, body) {
 			if (!error && response.statusCode === 201) {
@@ -228,6 +268,7 @@ module.exports = {
 	createIntent : createIntent,
 	createExamples : createExamples,
 	newElement : newElement,
+	createPrebuiltEntities : createPrebuiltEntities,
 	newExamples : newExamples,
 	trainApp : trainApp,
 	messageMeaning : messageMeaning

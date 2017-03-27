@@ -1,3 +1,4 @@
 [
-	{"description":"Order a pizza","id":"order_a_pizza","entries":[{"value":[{"text":"can i have a pizza "},{"text":"margherita","entity":"pizza_type"},{"text":" ?"}]},{"value":[{"text":"a pizza "},{"text":"margherita","entity":"pizza_type"},{"text":", please !"}]}]}
+    {"description":"Order a pizza","id":"order_a_pizza","entries":[{"value":[{"text":"can i have a pizza "},{"text":"margherita","entity":"pizza_type","prebuilt":false},{"text":" ?"}]},{"value":[{"text":"a pizza "},{"text":"margherita","entity":"pizza_type","prebuilt":false},{"text":", please !"}]}]},
+    {"description":"Order a drink","id":"order_a_drink","entries":[{"value":[{"text":"can i have a can of "},{"text":"coke","entity":"drink_type","prebuilt":false},{"text":" ?"}]},{"value":[{"text":"a can of "},{"text":"coke","entity":"drink_type","prebuilt":false},{"text":", please !"}]},{"value":[{"text":"can i have "},{"text":"five","entity":"number","prebuilt":true},{"text":" cans of "},{"text":"coke","entity":"drink_type","prebuilt":false},{"text":" ?"}]}]}
 ]
