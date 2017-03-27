@@ -1,6 +1,7 @@
 var Promise = require("bluebird");
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
+var luis = require('./luis.js');
 var queries = require('../test_data/queries.json');
 
 function getApiScore(query, intentsToFind, entitiesToFind) {
@@ -71,12 +72,47 @@ function getWitScore(query, intentsToFind, entitiesToFind) {
 	});
 }
 
+function getLuisScore(query, intentsToFind, entitiesToFind) {
+	return new Promise(function(resolve, reject) {
+		luis.messageMeaning(query).then(function(luisResponse) {
+			var resolvedQuery = luisResponse.query;
+			var intentsFound = [];
+			var entitiesFound = [];
+			var entities = luisResponse.entities;
+			for (var index = 0; index < entities.length; ++index) {
+				var entity = {};
+				entity[entities[index].type] = entities[index].entity;
+				entitiesFound.push(entity);
+			}
+			var intents = luisResponse.intents;
+			for (index = 0; index < intents.length; ++index) {
+				if (intents[index].intent !== 'None') {
+					intentsFound.push(intents[index].intent);
+				}
+			}
+			resolve({
+				'service' : 'LUIS',
+				'queryProvided' : query,
+				'resolvedQuery' : resolvedQuery,
+				'intentsToFind' : intentsToFind,
+				'intentsFound' : intentsFound,
+				'entitiesToFind' : entitiesToFind,
+				'entitiesFound' : entitiesFound,
+			});
+		}, function(error) {
+			reject(error);
+		});
+	});
+}
+
 function test() {
 	var queriesPromises = [];
 	for (var index = 0; index < queries.length; ++index) {
 		queriesPromises.push(getApiScore(queries[index].query,
 				queries[index].intents, queries[index].entities));
 		queriesPromises.push(getWitScore(queries[index].query,
+				queries[index].intents, queries[index].entities));
+		queriesPromises.push(getLuisScore(queries[index].query,
 				queries[index].intents, queries[index].entities));
 	}
 	Promise.all(queriesPromises).then(function(response) {

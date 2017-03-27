@@ -229,5 +229,6 @@ module.exports = {
 	createExamples : createExamples,
 	newElement : newElement,
 	newExamples : newExamples,
-	trainApp : trainApp
+	trainApp : trainApp,
+	messageMeaning : messageMeaning
 };
