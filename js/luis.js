@@ -82,13 +82,15 @@ function deleteElement(elementId, elementType) {
 function deleteAllElements(elementType){
 	return new Promise(function (resolve, reject){
 		getElements(elementType).then(function(elements) {
-			var deleteElementsPromises = [];
-			for (var index=0; index < elements.length; index++){
-				deleteElementsPromises.push(deleteElement(elements[index].id, elementType));
-			}
-			Promise.all(deleteElementsPromises).
-			then(function(response){resolve(response);}, 
-					function(error){reject(error);});
+			Promise.map(elements, function(element) {
+				return deleteElement(element.id, elementType).delay(1000);
+			}, {
+				concurrency : 1
+			}).then(function(result) {
+				resolve(result);
+			}, function(error) {
+				reject(error);
+			});
 		});
 	});
 }

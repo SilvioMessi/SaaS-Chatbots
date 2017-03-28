@@ -61,7 +61,7 @@ function deleteElement(elementId, intent) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject(response.statusCode);
 			}
 		});
 	});
@@ -70,13 +70,15 @@ function deleteElement(elementId, intent) {
 function deleteAllElements(intent){
 	return new Promise(function (resolve, reject){
 		getElements(intent).then(function(elements) {
-			var deleteElementsPromises = [];
-			for (var index=0; index < elements.length; index++){
-				deleteElementsPromises.push(deleteElement(elements[index].id, intent));
-			}
-			Promise.all(deleteElementsPromises).
-			then(function(response){resolve(response);}, 
-					function(error){reject(error);});
+			Promise.map(elements, function(element) {
+				return deleteElement(element.id, intent).delay(500);
+			}, {
+				concurrency : 1
+			}).then(function(result) {
+				resolve(result);
+			}, function(error) {
+				reject(error);
+			});
 		});
 	});
 }

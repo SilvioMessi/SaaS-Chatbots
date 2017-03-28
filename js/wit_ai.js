@@ -48,16 +48,17 @@ function deleteElement(elementId) {
 function deleteAllElements(intent){
 	return new Promise(function (resolve, reject){
 		getElements().then(function(elements) {
-			var deleteElementsPromises = [];
-			for (var index=0; index < elements.length; index++){
-				if (elements[index].startsWith("wit$") === false){
-					deleteElementsPromises.push(deleteElement(elements[index]));
-				}				
-
-			}
-			Promise.all(deleteElementsPromises).
-			then(function(response){resolve(response);}, 
-					function(error){reject(error);});
+			Promise.map(elements, function(element) {
+				if (element.startsWith("wit$") === false){
+					return deleteElement(element).delay(500);
+				}	
+			}, {
+				concurrency : 1
+			}).then(function(result) {
+				resolve(result);
+			}, function(error) {
+				reject(error);
+			});
 		});
 	});
 }
