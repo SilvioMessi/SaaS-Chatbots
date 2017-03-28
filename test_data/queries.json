@@ -1,6 +1,7 @@
 [
 	{"query":"Can i have a pizza margherita?","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
 	{"query":"A pizza margherita, please!","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
-	{"query":"How many pizzas?","intents":["order_a_pizza"],"entities":[]}
+	{"query":"How many pizzas?","intents":["order_a_pizza"],"entities":[]},
+	{"query":"Two pizza margherita, one pizza prosciutto and three can of coke, please.","intents":["order_a_pizza", "order_a_drink"],"entities":[{"pizza_type":"Margherita"}, {"pizza_type":"Prosicutto"}, {"drink_type":"Coke"}, {"number":"2"}, {"number":"1"},{"number":"3"} ]}
 
 ]

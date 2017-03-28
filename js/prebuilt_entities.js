@@ -1,6 +1,6 @@
 var prebuiltEntities = {
 	number : {
-		WIT : '',
+		WIT : 'wit/number',
 		LUIS : 'number',
 		API : 'sys.number'
 	}
