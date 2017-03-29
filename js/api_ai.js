@@ -93,7 +93,9 @@ function createEntity(genericEntity) {
 	}
 	return {
 		'name' : genericEntity.id,
-		'entries' : entries
+		'entries' : entries,
+		'isEnum': false,
+		'automatedExpansion': true
 	};
 }
 
@@ -104,14 +106,15 @@ function createIntent(genericIntent) {
 		var data = [];
 		for (var index_value = 0; index_value < entry.value.length; ++index_value) {
 			if (entry.value[index_value].hasOwnProperty('entity')) {
-				var entityName = entry.value[index_value].entity;
+				var entityType = entry.value[index_value].entity;
 				if (entry.value[index_value].prebuilt){
-					entityName = prebuiltEntities[entityName].API;
+					entityType = prebuiltEntities[entityType].API;
 				}
 				data.push({
 					'text' : entry.value[index_value].text,
-					'alias' : entityName,
-					'meta' : '@' + entityName
+					'alias' : entry.value[index_value].name,
+					'meta' : '@' + entityType,
+					'userDefined' : true
 				});
 			} else {
 				data.push({

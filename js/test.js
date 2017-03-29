@@ -43,8 +43,11 @@ function getApiScore(query, intentsToFind, entitiesToFind) {
 					for ( var entityKey in entities) {
 						if (entities.hasOwnProperty(entityKey)) {
 							var entity = {};
-							entity[entityKey] = entities[entityKey][0];
-							entitiesFound.push(entity);
+							// API return all parameters, not the entities found
+							if (entities[entityKey] !== '') {
+								entity[entityKey] = entities[entityKey];
+								entitiesFound.push(entity);
+							}
 						}
 					}
 					// TODO: it's possible retrieve more than
@@ -134,23 +137,35 @@ function test() {
 		queriesPromises.push(getLuisScore(queries[index].query,
 				queries[index].intents, queries[index].entities));
 	}
-	Promise.all(queriesPromises).then(
-			function(results) {
-				var stream = fs.createWriteStream("../results.csv");
-				stream.once('open', function(fd) {
-					stream.write('SERVICE;QUERY;INTENTS_SCORE;ENTITIES_SCORE\n');
-					for (index = 0; index < results.length; ++index) {
-						var result = results[index];
-						stream.write(result.service + ';'
-								+ result.resolvedQuery + ';'
-								+ result.intentsScore + ';'
-								+ result.entitiesScore + '\n');
-					}
-					stream.end();
-				});
-			}, function(error) {
-				console.log(error);
-			});
+	Promise
+			.all(queriesPromises)
+			.then(
+					function(results) {
+						fs.writeFile('../results.json', JSON.stringify(results,
+								null, 4), 'utf8');
+						var stream = fs.createWriteStream("../results.csv");
+						stream
+								.once(
+										'open',
+										function(fd) {
+											stream
+													.write('SERVICE;QUERY;INTENTS_SCORE;ENTITIES_SCORE\n');
+											for (index = 0; index < results.length; ++index) {
+												var result = results[index];
+												stream.write(result.service
+														+ ';'
+														+ result.resolvedQuery
+														+ ';'
+														+ result.intentsScore
+														+ ';'
+														+ result.entitiesScore
+														+ '\n');
+											}
+											stream.end();
+										});
+					}, function(error) {
+						console.log(error);
+					});
 }
 
 test();
