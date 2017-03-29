@@ -115,11 +115,6 @@ function training() {
 		console.log(error);
 	}).then(function(result) {
 		console.log('examples trained!');
-		return luis.trainApp();
-	}, function(error) {
-		console.log(error);
-	}).then(function(result) {
-		console.log('LUIS app trained!');
 	}, function(error) {
 		console.log(error);
 	});

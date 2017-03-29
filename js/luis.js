@@ -117,8 +117,12 @@ function createExamples(genericIntent) {
 		for (var index_value = 0; index_value < entry.value.length; ++index_value) {
 			var pieceOfText = entry.value[index_value].text;
 			if (entry.value[index_value].hasOwnProperty('entity')) {
+				var entityName = entry.value[index_value].entity;
+				if (entry.value[index_value].prebuilt){
+					entityName = prebuiltEntities[entityName].LUIS;
+				}
 				entityLabels.push({
-					'entityName' : entry.value[index_value].entity,
+					'entityName' : entityName,
 					'startCharIndex' : length,
 					'endCharIndex' : length + pieceOfText.length
 				});
@@ -219,25 +223,6 @@ function newExamples(examples) {
 	});
 }
 
-function trainApp() {
-	return new Promise(function(resolve, reject) {
-		var url = API_BASE_URL + TRAIN_ENDPOINT;
-		url = url.replace('{appId}', APP_ID);
-		url = url.replace('{versionId}', VERSION_ID);
-		var requestOptions = {
-			url : url,
-			headers : AUTH_HEADER,
-		};
-		request.post(requestOptions, function(error, response, body) {
-			if (!error && response.statusCode === 202) {
-				resolve();
-			} else {
-				reject(body);
-			}
-		});
-	});
-}
-
 function messageMeaning(query) {
 	return new Promise(function (resolve, reject){
 		var queryParameters = {
@@ -272,6 +257,5 @@ module.exports = {
 	newElement : newElement,
 	createPrebuiltEntities : createPrebuiltEntities,
 	newExamples : newExamples,
-	trainApp : trainApp,
 	messageMeaning : messageMeaning
 };
