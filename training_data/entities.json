@@ -1,4 +1,5 @@
 [
     {"description":"A type of pizza","id":"pizza_type","entries":[{"value":"Margherita","synonyms":["margherita"]},{"value":"Neapolitan","synonyms":["neapolitan"]},{"value":"Sicilian","synonyms":["sicilian"]},{"value":"Carbonara","synonyms":["carbonara"]},{"value":"Cheese","synonyms":["cheese"]}]},
-    {"description":"A type of drink","id":"drink_type","entries":[{"value":"Coca-Cola","synonyms":["coca cola","coke"]},{"value":"Beer","synonyms":["beer"]},{"value":"Water","synonyms":["water"]}]}
+    {"description":"A type of drink","id":"drink_type","entries":[{"value":"Coca-Cola","synonyms":["coca cola","coke"]},{"value":"Beer","synonyms":["beer"]},{"value":"Water","synonyms":["water"]},{"value":"Wine","synonyms":["wine"]}]},
+    {"description":"A type of food","id":"food_type","entries":[{"value":"Tapas","synonyms":["tapas"]}]}
 ]
