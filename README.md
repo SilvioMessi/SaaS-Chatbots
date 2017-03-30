@@ -1,11 +1,11 @@
 # SaaS Chatbots [italian documentation]
 L'obiettivo di questo progetto è quello di valutare e comparare i principali servizi SaaS per la creazione di chatbots.
 I servizi attualmente presi in considerazione sono:
-* [API.AI](https://www.api.ai/) - Google
+* [API.AI](https://api.ai/) - Google
 * [WIT.AI](https://wit.ai/) - Facebook
 * [LUIS.AI](https://www.luis.ai/) - Microsoft
 
-L'analisi di tali servizi mira a valutare il loro supporto al NLU (natural language understanding), ovvero la loro capacità di analizzare frasi espresse in linguaggio naturale al fine di estrapolare da esse alcune informazioni importanti. In particolare ci si aspetta che da una frase vengano estratti intenti ed entità.
+L'analisi di tali servizi mira a valutare il loro supporto al NLU (natural language understanding), ovvero la loro capacità di analizzare frasi espresse in linguaggio naturale e di estrapolare da esse alcune informazioni importanti. In particolare ci si aspetta che da una frase vengano estratti intenti ed entità.
 
 Sono stati trascurati altri aspetti come ad esempio la gestione del contesto.
 

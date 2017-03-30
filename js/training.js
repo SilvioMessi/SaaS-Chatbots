@@ -16,7 +16,11 @@ function deleteAllElements() {
 			console.log('API entities deleted!');
 			return witAi.deleteAllElements();
 		}, function(error) {
-			reject(error);
+			// sometimes, in this point of the chain, API response with status
+			// 400
+			console.log('API.AI problems. Please try again!');
+			// TODO : better way to break the chain
+			process.exit();
 		}).then(function(result) {
 			console.log('WIT intents & entities deleted!');
 			return luis.deleteAllElements('intent');
