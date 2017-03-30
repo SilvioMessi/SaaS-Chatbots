@@ -1,5 +1,6 @@
-var Promise = require("bluebird");
+var Promise = require('bluebird');
 var fs = require('fs');
+var util = require('util');
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
 var luis = require('./luis.js');
@@ -127,6 +128,23 @@ function getLuisScore(query, intentsToFind, entitiesToFind) {
 	});
 }
 
+function saveResults(results) {
+	fs.writeFile('../results.json', JSON.stringify(results, null, 4), 'utf8');
+	var stream = fs.createWriteStream('../results.csv');
+	stream.once('open', function(fd) {
+		stream.write('SERVICE;QUERY;INTENTS_SCORE;ENTITIES_SCORE\n');
+		for (var index = 0; index < results.length; ++index) {
+			var result = results[index];
+			var row = util.format('%s;%s;%s;%s\n', result.service,
+					result.resolvedQuery, result.intentsScore,
+					result.entitiesScore);
+			stream.write(row);
+
+		}
+		stream.end();
+	});
+}
+
 function test() {
 	var queriesPromises = [];
 	for (var index = 0; index < queries.length; ++index) {
@@ -137,35 +155,11 @@ function test() {
 		queriesPromises.push(getLuisScore(queries[index].query,
 				queries[index].intents, queries[index].entities));
 	}
-	Promise
-			.all(queriesPromises)
-			.then(
-					function(results) {
-						fs.writeFile('../results.json', JSON.stringify(results,
-								null, 4), 'utf8');
-						var stream = fs.createWriteStream("../results.csv");
-						stream
-								.once(
-										'open',
-										function(fd) {
-											stream
-													.write('SERVICE;QUERY;INTENTS_SCORE;ENTITIES_SCORE\n');
-											for (index = 0; index < results.length; ++index) {
-												var result = results[index];
-												stream.write(result.service
-														+ ';'
-														+ result.resolvedQuery
-														+ ';'
-														+ result.intentsScore
-														+ ';'
-														+ result.entitiesScore
-														+ '\n');
-											}
-											stream.end();
-										});
-					}, function(error) {
-						console.log(error);
-					});
+	Promise.all(queriesPromises).then(function(results) {
+		saveResults(results);
+	}, function(error) {
+		console.log(error);
+	});
 }
 
 test();
