@@ -13,12 +13,12 @@ function scoreLogic(service, queryProvided, resolvedQuery, intentsToFind,
 	if (intentsToFind.length !== 0) {
 		intentsScore = intentsFound.length / intentsToFind.length;
 	} else {
-		intentsScore = intentsFound.length;
+		intentsScore = 1 + intentsFound.length;
 	}
 	if (entitiesToFind.length !== 0) {
 		entitiesScore = entitiesFound.length / entitiesToFind.length;
 	} else {
-		entitiesScore = entitiesFound.length;
+		entitiesScore = 1 + entitiesFound.length;
 	}
 	return {
 		'service' : service,
@@ -67,37 +67,37 @@ function getApiScore(query, intentsToFind, entitiesToFind) {
 }
 
 function getWitScore(query, intentsToFind, entitiesToFind) {
-	return new Promise(
-			function(resolve, reject) {
-				witAi
-						.messageMeaning(query)
-						.then(
-								function(witResponse) {
-									var resolvedQuery = witResponse._text;
-									var intentsFound = [];
-									var entitiesFound = [];
-									var entities = witResponse.entities;
-									for ( var entityKey in entities) {
-										if (entities.hasOwnProperty(entityKey)) {
-											if (intentsToFind
-													.indexOf(entityKey) === -1) {
-												var entity = {};
-												entity[entityKey] = entities[entityKey][0].value;
-												entitiesFound.push(entity);
-
-											} else {
-												intentsFound.push(entityKey);
-											}
-										}
-									}
-									resolve(scoreLogic('WIT', query,
-											resolvedQuery, intentsToFind,
-											intentsFound, entitiesToFind,
-											entitiesFound));
-								}, function(error) {
-									reject(error);
-								});
-			});
+	return new Promise(function(resolve, reject) {
+		witAi.messageMeaning(query).then(
+				function(witResponse) {
+					var resolvedQuery = witResponse._text;
+					var intentsFound = [];
+					var entitiesFound = [];
+					var entities = witResponse.entities;
+					for ( var entityKey in entities) {
+						if (entities.hasOwnProperty(entityKey)) {
+							// check if WIT entity is a intent
+							if (intentsToFind.indexOf(entityKey) === -1) {
+								var entity = {};
+								var tmp = entities[entityKey][0];
+								if (tmp.hasOwnProperty('value')) {
+									entity[entityKey] = tmp.value;
+								} else if (tmp.hasOwnProperty('values')) {
+									entity[entityKey] = tmp.values;
+								}
+								entitiesFound.push(entity);
+							} else {
+								intentsFound.push(entityKey);
+							}
+						}
+					}
+					resolve(scoreLogic('WIT', query, resolvedQuery,
+							intentsToFind, intentsFound, entitiesToFind,
+							entitiesFound));
+				}, function(error) {
+					reject(error);
+				});
+	});
 }
 
 function getLuisScore(query, intentsToFind, entitiesToFind) {
@@ -116,7 +116,9 @@ function getLuisScore(query, intentsToFind, entitiesToFind) {
 					var intents = luisResponse.intents;
 					for (index = 0; index < intents.length; ++index) {
 						if (intents[index].intent !== 'None') {
-							intentsFound.push(intents[index].intent);
+							if (intents[index].score > 0.2) {
+								intentsFound.push(intents[index].intent);
+							}
 						}
 					}
 					resolve(scoreLogic('LUIS', query, resolvedQuery,
