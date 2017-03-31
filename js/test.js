@@ -148,19 +148,25 @@ function saveResults(results) {
 }
 
 function test() {
-	var queriesPromises = [];
-	for (var index = 0; index < queries.length; ++index) {
-		queriesPromises.push(getApiScore(queries[index].query,
-				queries[index].intents, queries[index].entities));
-		queriesPromises.push(getWitScore(queries[index].query,
-				queries[index].intents, queries[index].entities));
-		queriesPromises.push(getLuisScore(queries[index].query,
-				queries[index].intents, queries[index].entities));
-	}
-	Promise.all(queriesPromises).then(function(results) {
-		saveResults(results);
-	}, function(error) {
-		console.log(error);
+	return new Promise(function(resolve, reject) {
+		Promise.map(
+				queries,
+				function(query) {
+					var queriesPromises = [];
+					queriesPromises.push(getApiScore(query.query,
+							query.intents, query.entities));
+					queriesPromises.push(getWitScore(query.query,
+							query.intents, query.entities));
+					queriesPromises.push(getLuisScore(query.query,
+							query.intents, query.entities));
+					return Promise.all(queriesPromises).delay(500);
+				}, {
+					concurrency : 1
+				}).then(function(results) {
+			saveResults(results);
+		}, function(error) {
+			reject(error);
+		});
 	});
 }
 
