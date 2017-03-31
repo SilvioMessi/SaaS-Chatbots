@@ -4,15 +4,20 @@ var prebuiltEntities = {
 		LUIS : 'number',
 		API : 'sys.number'
 	},
-	datetime:{
+	datetime : {
 		WIT : 'wit/datetime',
 		LUIS : 'datetime',
 		API : 'sys.date-time'
 	},
-	location:{
+	location : {
 		WIT : 'wit/location',
 		LUIS : 'geography',
 		API : 'sys.location'
+	},
+	money : {
+		WIT : 'wit/amount_of_money',
+		LUIS : 'money',
+		API : 'sys.unit-currency'
 	}
 };
 module.exports = prebuiltEntities;

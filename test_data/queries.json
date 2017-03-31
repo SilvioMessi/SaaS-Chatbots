@@ -2,6 +2,18 @@
 	{"query":"Can i have a pizza margherita?","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
 	{"query":"A pizza margherita, please!","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
 	{"query":"How many pizzas?","intents":["order_a_pizza"],"entities":[]},
+	{"query":"I’ll have a bottle of water?","intents":["order_a_drink"],"entities":[{"drink_type":"Water"}]},
 	{"query":"Two pizza margherita, one pizza pepperoni and three cans of coke, please.","intents":["order_a_pizza", "order_a_drink"],"entities":[{"pizza_type":"Margherita"}, {"pizza_type":"Pepperoni"}, {"drink_type":"Coca-Cola"}, {"number":"2"}, {"number":"1"},{"number":"3"} ]},
-	{"query":"Book a table for 3 people at a restaurant that serve tapas and wine for tonight","intents":["book_restaurant"],"entities":[{"food_type":"Tapas"},{"drink_type":"Wine"},{"datetime":"tonight"},{"number":"3"}]}
+	{"query":"Book a table for 3 people at a restaurant that serve tapas and wine for tonight","intents":["book_restaurant"],"entities":[{"food_type":"Tapas"},{"drink_type":"Wine"},{"datetime":"tonight"},{"number":"3"}]},
+	{"query":"Book a table at a restaurant near Bergamo for 2 people tomorrow night","intents":["book_restaurant"],"entities":[{"location":"Bergamo"},{"number":"2"},{"datetime":"tomorrow night"}]},
+	{"query":"Find me a table for four for dinner tonight","intents":["book_restaurant"],"entities":[{"number":"4"},{"datetime":"tonight"}]},
+	{"query":"Book a table at an italian restaurant nearby for dinner with 5 people","intents":["book_restaurant"],"entities":[{"food_type":"Italian"},{"number":"5"}]},
+	{"query":"I want a table in a good japanese restaurant near Bergamo","intents":["book_restaurant"],"entities":[{"food_type":"Japanese"},{"location":"Bergamo"}]},
+	{"query":"What will the weather be like tomorrow morning?","intents":["get_weather_forecast"],"entities":[{"datetime":"tomorrow morning"}]},
+	{"query":"What's the weather like in Paris, New York and Chicago?","intents":["get_weather_forecast"],"entities":[{"location":"Paris"},{"location":"New York"},{"location":"Chicago"}]},
+	{"query":"What's the weather like at Bergamo right now?","intents":["get_weather_forecast"],"entities":[{"location":"Bergamo"},{"datetime":"now"}]},
+	{"query":"Show me the forecast for New Orleans","intents":["get_weather_forecast"],"entities":[{"location":"New Orleans"}]},
+	{"query":"How much this NAS?","intents":["buy_goods"],"entities":[{"goods_type":"NAS"}]},
+	{"query":"Where can I buy a PC that cost less then 600 dollars?","intents":["buy_goods"],"entities":[{"goods_type":"Personal Computer"},{"money":"600$"}]},
+	{"query":"I'll buy you a beer. How much is it?","intents":["buy_goods","order_a_drink"],"entities":[{"drink_type":"beer"}]}
 ]
