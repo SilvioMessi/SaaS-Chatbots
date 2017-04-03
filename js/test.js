@@ -136,12 +136,14 @@ function saveResults(results) {
 	stream.once('open', function(fd) {
 		stream.write('SERVICE;QUERY;INTENTS_SCORE;ENTITIES_SCORE\n');
 		for (var index = 0; index < results.length; ++index) {
-			var result = results[index];
-			var row = util.format('%s;%s;%s;%s\n', result.service,
-					result.resolvedQuery, result.intentsScore,
-					result.entitiesScore);
-			stream.write(row);
-
+			var services = results[index];
+			for (var indexTwo = 0; indexTwo < services.length; ++indexTwo) {
+				var service = services[indexTwo];
+				var row = util.format('%s;%s;%s;%s\n', service.service,
+						service.resolvedQuery, service.intentsScore,
+						service.entitiesScore);
+				stream.write(row);
+			}
 		}
 		stream.end();
 	});
