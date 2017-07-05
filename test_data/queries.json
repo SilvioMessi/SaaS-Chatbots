@@ -2,7 +2,7 @@
 	{"query":"Can i have a pizza margherita?","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
 	{"query":"A pizza margherita, please!","intents":["order_a_pizza"],"entities":[{"pizza_type":"Margherita"}]},
 	{"query":"How many pizzas?","intents":["order_a_pizza"],"entities":[]},
-	{"query":"I’ll have a bottle of water?","intents":["order_a_drink"],"entities":[{"drink_type":"Water"}]},
+	{"query":"I'll have a bottle of water?","intents":["order_a_drink"],"entities":[{"drink_type":"Water"}]},
 	{"query":"Two pizza margherita, one pizza pepperoni and three cans of coke, please.","intents":["order_a_pizza", "order_a_drink"],"entities":[{"pizza_type":"Margherita"}, {"pizza_type":"Pepperoni"}, {"drink_type":"Coca-Cola"}, {"number":"2"}, {"number":"1"},{"number":"3"} ]},
 	{"query":"Book a table for 3 people at a restaurant that serve tapas and wine for tonight","intents":["book_restaurant"],"entities":[{"food_type":"Tapas"},{"drink_type":"Wine"},{"datetime":"tonight"},{"number":"3"}]},
 	{"query":"Book a table at a restaurant near Bergamo for 2 people tomorrow night","intents":["book_restaurant"],"entities":[{"location":"Bergamo"},{"number":"2"},{"datetime":"tomorrow night"}]},
