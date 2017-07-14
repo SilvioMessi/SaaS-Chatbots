@@ -1,6 +1,7 @@
 var Promise = require('bluebird');
 var fs = require('fs');
 var util = require('util');
+var msChatbot = require('./ms_chatbot.js')
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
 var luis = require('./luis.js');
@@ -31,6 +32,34 @@ function scoreLogic(service, queryProvided, resolvedQuery, intentsToFind,
 		'entitiesFound' : entitiesFound,
 		'entitiesScore' : entitiesScore
 	};
+}
+
+function getMsChatbotScore(query, intentsToFind, entitiesToFind) {
+	return new Promise(function(resolve, reject) {
+		msChatbot.messageMeaning(query).then(
+				function(msChatbotResponse) {
+					var resolvedQuery = msChatbotResponse.query;
+					var intentsFound = [];
+					var entitiesFound = [];
+					var entities = msChatbotResponse.sentences[0].entities_recognized;
+					for (var index = 0; index < entities.length; ++index) {
+						var entity = {};
+						entity[entities[index].value.entity.name] = entities[index].value.value;
+						entitiesFound.push(entity);
+					}
+					var intents = msChatbotResponse.sentences[0].intents_recognized;
+					for (index = 0; index < intents.length; ++index) {
+						if (intents[index].score > 0.4) {
+							intentsFound.push(intents[index].intent);
+						}
+					}
+					resolve(scoreLogic('MS CHATBOT', query, resolvedQuery,
+							intentsToFind, intentsFound, entitiesToFind,
+							entitiesFound));
+				}, function(error) {
+					reject(error);
+				});
+	});
 }
 
 function getApiScore(query, intentsToFind, entitiesToFind) {
@@ -155,13 +184,15 @@ function test() {
 				queries,
 				function(query) {
 					var queriesPromises = [];
+					queriesPromises.push(getMsChatbotScore(query.query,
+							query.intents, query.entities));
 					queriesPromises.push(getApiScore(query.query,
 							query.intents, query.entities));
 					queriesPromises.push(getWitScore(query.query,
 							query.intents, query.entities));
 					queriesPromises.push(getLuisScore(query.query,
 							query.intents, query.entities));
-					return Promise.all(queriesPromises).delay(500);
+					return Promise.all(queriesPromises);
 				}, {
 					concurrency : 1
 				}).then(function(results) {

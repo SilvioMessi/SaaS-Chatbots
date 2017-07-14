@@ -1,13 +1,24 @@
 var Promise = require('bluebird');
+var msChatbot = require('./ms_chatbot.js')
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
-var luis = require('./luis.js');
+var luis = require('./luis.js')
 var genericEntities = require('../training_data/entities.json');
 var genericIntents = require('../training_data/intents.json');
 
 function deleteAllElements() {
 	return new Promise(function(resolve, reject) {
-		apiAi.deleteAllElements(true).then(function(result) {
+		msChatbot.deleteAllElements(true).then(function(result) {
+			console.log('MS CHATBOT intents deleted!');
+			return msChatbot.deleteAllElements();
+		}, function(error) {
+			reject(error);
+		}).then(function(result) {
+			console.log('MS CHATBOT entities deleted!');
+			return apiAi.deleteAllElements(true);
+		}, function(error) {
+			reject(error);
+		}).then(function(result) {
 			console.log('API intents deleted!');
 			return apiAi.deleteAllElements(false);
 		}, function(error) {
@@ -47,13 +58,15 @@ function trainingEntities() {
 	return new Promise(function(resolve, reject) {
 		Promise.map(genericEntities, function(genericEntity) {
 			var newEntitiesPromises = [];
+			var msChatbotEntity = msChatbot.createEntity(genericEntity);
+			newEntitiesPromises.push(msChatbot.newElement(msChatbotEntity));
 			var apiAiEntity = apiAi.createEntity(genericEntity);
 			newEntitiesPromises.push(apiAi.newElement(apiAiEntity));
 			var witAiEntity = witAi.createEntity(genericEntity);
 			newEntitiesPromises.push(witAi.newElement(witAiEntity));
 			var luisEntity = luis.createEntity(genericEntity);
 			newEntitiesPromises.push(luis.newElement(luisEntity));
-			return Promise.all(newEntitiesPromises).delay(1000);
+			return Promise.all(newEntitiesPromises).delay(600);
 		}, {
 			concurrency : 1
 		}).then(function(result) {
@@ -70,13 +83,15 @@ function trainingIntents() {
 	return new Promise(function(resolve, reject) {
 		Promise.map(genericIntents, function(genericIntent) {
 			var newIntentsPromises = [];
+			var msChatbotIntent = msChatbot.createIntent(genericIntent);
+			newIntentsPromises.push(msChatbot.newElement(msChatbotIntent, true));
 			var apiAiIntent = apiAi.createIntent(genericIntent);
 			newIntentsPromises.push(apiAi.newElement(apiAiIntent, true));
 			var witAiIntent = witAi.createIntent(genericIntent);
 			newIntentsPromises.push(witAi.newElement(witAiIntent));
 			var luisIntent = luis.createIntent(genericIntent);
 			newIntentsPromises.push(luis.newElement(luisIntent, true));
-			return Promise.all(newIntentsPromises).delay(1000);
+			return Promise.all(newIntentsPromises).delay(600);
 		}, {
 			concurrency : 1
 		}).then(function(result) {
@@ -91,7 +106,7 @@ function trainingExamples() {
 	return new Promise(function(resolve, reject) {
 		Promise.map(genericIntents, function(genericIntent) {
 			var examples = luis.createExamples(genericIntent);
-			return luis.newExamples(examples).delay(1000);
+			return luis.newExamples(examples);
 		}, {
 			concurrency : 1
 		}).then(function(response) {
