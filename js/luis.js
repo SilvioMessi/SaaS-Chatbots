@@ -83,7 +83,7 @@ function deleteAllElements(elementType){
 	return new Promise(function (resolve, reject){
 		getElements(elementType).then(function(elements) {
 			Promise.map(elements, function(element) {
-				return deleteElement(element.id, elementType).delay(1000);
+				return deleteElement(element.id, elementType).delay(200);
 			}, {
 				concurrency : 1
 			}).then(function(result) {
@@ -211,11 +211,11 @@ function newExample(example){
 
 function newExamples(examples) {
 	return new Promise(function(resolve, reject) {
-		var newExamplesPromises = [];
-		for (var index = 0; index < examples.length; ++index) {
-			newExamplesPromises.push(newExample(examples[index]));
-		}
-		Promise.all(newExamplesPromises).then(function(response) {
+		Promise.map(examples, function(example) {
+			return newExample(example).delay(400);
+		}, {
+			concurrency : 1
+		}).then(function(response) {
 			resolve(response);
 		}, function(error) {
 			reject(error);

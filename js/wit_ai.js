@@ -50,7 +50,7 @@ function deleteAllElements(intent){
 		getElements().then(function(elements) {
 			Promise.map(elements, function(element) {
 				if (element.startsWith("wit$") === false){
-					return deleteElement(element).delay(500);
+					return deleteElement(element).delay(200);
 				}	
 			}, {
 				concurrency : 1

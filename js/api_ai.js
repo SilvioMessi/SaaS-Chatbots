@@ -71,7 +71,7 @@ function deleteAllElements(intent){
 	return new Promise(function (resolve, reject){
 		getElements(intent).then(function(elements) {
 			Promise.map(elements, function(element) {
-				return deleteElement(element.id, intent).delay(500);
+				return deleteElement(element.id, intent).delay(200);
 			}, {
 				concurrency : 1
 			}).then(function(result) {
