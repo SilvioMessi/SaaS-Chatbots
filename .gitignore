@@ -1,6 +1,8 @@
 # Results
 results.csv
 results.json
+metrics_*.csv
+support_matrix_*.csv
 
 # IDE stuff
 .settings/*
