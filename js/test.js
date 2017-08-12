@@ -5,7 +5,7 @@ var msChatbot = require('./ms_chatbot.js')
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
 var luis = require('./luis.js');
-var queries = require('../test_data/queries.json');
+var queries = require('../data/intents_test_set.json');
 
 function scoreLogic(service, queryProvided, resolvedQuery, intentsToFind,
 		intentsFound, entitiesToFind, entitiesFound) {

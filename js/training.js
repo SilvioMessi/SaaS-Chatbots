@@ -3,8 +3,8 @@ var msChatbot = require('./ms_chatbot.js')
 var witAi = require('./wit_ai.js');
 var apiAi = require('./api_ai.js');
 var luis = require('./luis.js')
-var genericEntities = require('../training_data/entities.json');
-var genericIntents = require('../training_data/intents.json');
+var genericEntities = require('../data/entities.json');
+var genericIntents = require('../data/intents_training_set.json');
 
 function deleteAllElements() {
 	return new Promise(function(resolve, reject) {

@@ -4,6 +4,10 @@ results.json
 metrics_*.csv
 support_matrix_*.csv
 
+# Generated training and test set
+data/intents_training_set.json
+data/intents_test_set.json
+
 # IDE stuff
 .settings/*
 .project
