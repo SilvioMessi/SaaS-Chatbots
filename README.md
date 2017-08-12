@@ -36,7 +36,7 @@ Sono necessarie una serie di azioni manuali per completare la fase di training:
 ### Fase di testing
 * eseguire lo script ``js/test.js``
 
-Verrano generati due files:
+Verrano generati i seguenti files:
 * ``results.json`` risultati in formato esteso 
 * ``results.csv`` risultati in formato compatto 
 * ``metrics_NOME_SEVIZIO.csv`` confusion matrix
