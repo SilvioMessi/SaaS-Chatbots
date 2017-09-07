@@ -74,7 +74,8 @@ function createEntity(genericEntity) {
 	return {
 		'doc' : genericEntity.description,
 		'id' : genericEntity.id,
-		'values' : values
+		'values' : values,
+		'lookups' : [ 'keywords']
 	};
 }
 
