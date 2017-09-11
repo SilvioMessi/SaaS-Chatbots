@@ -36,7 +36,7 @@ function getElements(intent) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('API get elements:' + body);
 			}
 		});
 	});
@@ -61,7 +61,7 @@ function deleteElement(elementId, intent) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(response.statusCode);
+				reject('API delete element:' + response.statusCode);
 			}
 		});
 	});
@@ -77,7 +77,7 @@ function deleteAllElements(intent){
 			}).then(function(result) {
 				resolve(result);
 			}, function(error) {
-				reject(error);
+				reject('API delete all elements:' + error);
 			});
 		});
 	});
@@ -156,7 +156,7 @@ function newElement(element, intent) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('API new element:' + body);
 			}
 		});
 	});
@@ -180,7 +180,7 @@ function messageMeaning(query) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('API message meaning:' + body);
 			}
 		});
 	});

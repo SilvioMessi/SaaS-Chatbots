@@ -39,7 +39,7 @@ function getElements(elementType) {
 			if (!error && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('LUIS get elements:' + body);
 			}
 		});
 	});
@@ -73,7 +73,7 @@ function deleteElement(elementId, elementType) {
 				if (JSON.parse(body).error.message === 'Can not delete None intent.'){
 					resolve();
 				}
-				reject(body);
+				reject('LUIS delete element:' + body);
 			}
 		});
 	});
@@ -83,13 +83,13 @@ function deleteAllElements(elementType){
 	return new Promise(function (resolve, reject){
 		getElements(elementType).then(function(elements) {
 			Promise.map(elements, function(element) {
-				return deleteElement(element.id, elementType).delay(200);
+				return deleteElement(element.id, elementType).delay(500);
 			}, {
 				concurrency : 1
 			}).then(function(result) {
 				resolve(result);
 			}, function(error) {
-				reject(error);
+				reject('LUIS delete all elements:' + error);
 			});
 		});
 	});
@@ -157,7 +157,7 @@ function newElement(element, intent) {
 			if (!error && response.statusCode === 201) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('LUIS new element:' + body);
 			}
 		});
 	});
@@ -183,7 +183,7 @@ function createPrebuiltEntities() {
 			if (!error && response.statusCode === 201) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('LUIS create prebuilt entities:' + body);
 			}
 		});
 	});
@@ -203,7 +203,7 @@ function newExample(example){
 			if (!error && response.statusCode === 201) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('LUIS new example:' + body);
 			}
 		});
 	});
@@ -218,7 +218,7 @@ function newExamples(examples) {
 		}).then(function(response) {
 			resolve(response);
 		}, function(error) {
-			reject(error);
+			reject('LUIS new examples:' + error);
 		});
 	});
 }
@@ -241,7 +241,7 @@ function messageMeaning(query) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('LUIS message meaning:' + body);
 			}
 		});
 	});

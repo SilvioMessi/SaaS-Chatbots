@@ -22,7 +22,7 @@ function getElements() {
 			if (!error && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('WIT get elements:' + body);
 			}
 		});
 	});
@@ -39,7 +39,7 @@ function deleteElement(elementId) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('WIT delete element:' + body);
 			}
 		});
 	});
@@ -57,7 +57,7 @@ function deleteAllElements(intent){
 			}).then(function(result) {
 				resolve(result);
 			}, function(error) {
-				reject(error);
+				reject('WIT delete all elements:' + error);
 			});
 		});
 	});
@@ -113,7 +113,7 @@ function newElement(element) {
 			if (!error && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('WIT new element:' + body);
 			}
 		});
 	});
@@ -133,7 +133,7 @@ function messageMeaning(query) {
 			if (!error && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('WIT message meaning:' + body);
 			}
 		});
 	});

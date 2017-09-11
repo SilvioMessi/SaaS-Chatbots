@@ -25,7 +25,7 @@ function getElements(intent) {
 			if (!error && response.statusCode === 200) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('MS CHATBOT get elements:' + body);
 			}
 		});
 	});
@@ -47,7 +47,7 @@ function deleteElement(elementId, intent) {
 				resolve();
 			}
 			else{
-				reject(body);
+				reject('MS CHATBOT delete element:' + body);
 			}
 		});
 	});
@@ -63,7 +63,7 @@ function deleteAllElements(intent){
 			}).then(function(result) {
 				resolve(result);
 			}, function(error) {
-				reject(error);
+				reject('MS CHATBOT delete all elements:' + error);
 			});
 		});
 	});
@@ -100,7 +100,7 @@ function newElement(element, intent) {
 			if (!error && response.statusCode === 201) {
 				resolve(JSON.parse(body));
 			} else {
-				reject(body);
+				reject('MS CHATBOT new element:' + body);
 			}
 		});
 	});
@@ -121,7 +121,7 @@ function messageMeaning(query) {
 				resolve(JSON.parse(body));
 			}
 			else{
-				reject(body);
+				reject('MS CHATBOT message meaning:' + body);
 			}
 		});
 	});
