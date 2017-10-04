@@ -79,24 +79,27 @@ function createEntity(genericEntity) {
 	};
 }
 
-function createIntent(genericIntent) {
+function createIntent(genericIntents) {
 	var values = [];
-	var expressions = [];
-	for (var index = 0; index < genericIntent.entries.length; ++index) {
-		var entry = genericIntent.entries[index];
-		var text = '';
-		for (var index_value = 0; index_value < entry.value.length; ++index_value) {
-			text += entry.value[index_value].text;
+	for (var intentIndex = 0; intentIndex < genericIntents.length; ++intentIndex) {
+		var genericIntent = genericIntents[intentIndex];
+		var expressions = [];
+		for (var index = 0; index < genericIntent.entries.length; ++index) {
+			var entry = genericIntent.entries[index];
+			var text = '';
+			for (var index_value = 0; index_value < entry.value.length; ++index_value) {
+				text += entry.value[index_value].text;
+			}
+			expressions.push(text);
 		}
-		expressions.push(text);
+		values.push({
+			'value' : genericIntent.id,
+			'expressions' : expressions
+		});
 	}
-	values.push({
-		'value' : genericIntent.id,
-		'expressions' : expressions
-	});
 	return {
-		'doc' : genericIntent.description,
-		'id' : genericIntent.id,
+		'doc' : 'intent',
+		'id' : 'intent',
 		'values' : values,
 		'lookups' : [ 'trait' ]
 	};

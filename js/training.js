@@ -50,6 +50,8 @@ function deleteAllElements() {
 		}).then(function(result) {
 			console.log('LUIS prebuilt entities deleted!');
 			resolve();
+		}, function(error) {
+			reject(error);
 		});
 	});
 }
@@ -87,13 +89,16 @@ function trainingIntents() {
 			newIntentsPromises.push(msChatbot.newElement(msChatbotIntent, true));
 			var apiAiIntent = apiAi.createIntent(genericIntent);
 			newIntentsPromises.push(apiAi.newElement(apiAiIntent, true));
-			var witAiIntent = witAi.createIntent(genericIntent);
-			newIntentsPromises.push(witAi.newElement(witAiIntent));
 			var luisIntent = luis.createIntent(genericIntent);
 			newIntentsPromises.push(luis.newElement(luisIntent, true));
 			return Promise.all(newIntentsPromises).delay(600);
 		}, {
 			concurrency : 1
+		}).then(function(result) {
+			var witAiIntent = witAi.createIntent(genericIntents);
+			return witAi.newElement(witAiIntent)
+		}, function(error) {
+			reject(error);
 		}).then(function(result) {
 			resolve(result);
 		}, function(error) {
