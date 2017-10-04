@@ -6,7 +6,7 @@ var prebuiltEntities = {
 	},
 	datetime : {
 		WIT : 'wit/datetime',
-		LUIS : 'datetime',
+		LUIS : 'datetimeV2',
 		API : 'sys.date-time'
 	},
 	location : {

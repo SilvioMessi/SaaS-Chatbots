@@ -80,7 +80,9 @@ function getApiScore(query, intentsToFind, entitiesToFind) {
 							var entity = {};
 							// API return all parameters, not the entities found
 							if (entities[entityKey] !== '') {
-								entity[entityKey] = entities[entityKey];
+								var position = entityKey.lastIndexOf("_");
+								entityId = entityKey.substring(0, position);
+								entity[entityId] = entities[entityKey];
 								entitiesFound.push(entity);
 							}
 						}
@@ -111,17 +113,22 @@ function getWitScore(query, intentsToFind, entitiesToFind) {
 					for ( var entityKey in entities) {
 						if (entities.hasOwnProperty(entityKey)) {
 							// check if WIT entity is a intent
-							if (intentsToFind.indexOf(entityKey) === -1) {
-								var entity = {};
-								var tmp = entities[entityKey][0];
-								if (tmp.hasOwnProperty('value')) {
-									entity[entityKey] = tmp.value;
-								} else if (tmp.hasOwnProperty('values')) {
-									entity[entityKey] = tmp.values;
+							if (entityKey != 'intent') {
+								for (var index = 0; index < entities[entityKey].length; ++index) {
+									var entity = {};
+									var tmp = entities[entityKey][index];
+									if (tmp.hasOwnProperty('value')) {
+										entity[entityKey] = tmp.value;
+									} else if (tmp.hasOwnProperty('values')) {
+										entity[entityKey] = tmp.values;
+									}
+									entitiesFound.push(entity);
 								}
-								entitiesFound.push(entity);
 							} else {
-								intentsFound.push(entityKey);
+								for (var index = 0; index < entities[entityKey].length; ++index) {
+									var tmp = entities[entityKey][index];
+									intentsFound.push(tmp.value);
+								}
 							}
 						}
 					}
@@ -183,7 +190,31 @@ function saveResults(results) {
 	});
 }
 
-function computeMetrics(results, serviceName) {
+function convertToSet(arrayOfObjects){
+	var set = new Set();
+	for (var index = 0; index < arrayOfObjects.length; ++index) {
+		var value = Object.keys(arrayOfObjects[index])[0];
+		do {
+			var position = value.lastIndexOf("_");
+			if (position == -1){
+				value = value + '_1'
+			}
+			else{
+				var number = parseInt(value.substring(position +1));
+				if (isNaN(number)){
+					value = value + '_1'
+				}
+				else{
+					value = value.substring(0, position) + '_' + (number + 1);
+				}
+			}
+		}while(set.has(value))
+		set.add(value);
+	}
+	return set;
+}
+
+function computeIntentsMetrics(results, serviceName) {
 	var supportMatrix = {};
 	var allClasses = [];
 	var confusionMatrix = {};
@@ -205,9 +236,14 @@ function computeMetrics(results, serviceName) {
 			var intentsFound = service.intentsFound;
 			var predicted = 'None';
 			if (intentsFound.length > 0) {
-				predicted = intentsFound[0]
+				var position = intentsFound.indexOf(_class);
+				if (position != -1){
+					predicted = _class
+				}
+				else{
+					predicted = intentsFound[0]
+				}
 			}
-
 			if (!(_class in supportMatrix)) {
 				supportMatrix[_class] = {}
 				supportMatrix[_class][predicted] = 0;
@@ -243,7 +279,7 @@ function computeMetrics(results, serviceName) {
 	}
 	
 	// save support matrix
-	var streamSupportMatrix = fs.createWriteStream('../support_matrix_' + serviceName + '.csv');
+	var streamSupportMatrix =  fs.createWriteStream('../support_matrix_intents_' + serviceName + '.csv');
 	streamSupportMatrix.once('open', function(fd) {
 		streamSupportMatrix.write('class\\predicted;' + allClasses.join(';') + ';\n')
 		for (var classId = 0; classId < allClasses.length; ++classId) {
@@ -299,7 +335,6 @@ function computeMetrics(results, serviceName) {
 		totFn += fn;
 		totFp += fp;
 		totTn += tn;
-		
 	}
 	
 	totTp = totTp/allClasses.length;
@@ -312,7 +347,7 @@ function computeMetrics(results, serviceName) {
 	metrics['totTn'] = totTn;
 	
 	// save metrics
-	var streamMetrics = fs.createWriteStream('../metrics_' + serviceName + '.csv');
+	var streamMetrics = fs.createWriteStream('../metrics_intents_' + serviceName + '.csv');
 	streamMetrics.once('open', function(fd) {
 		streamMetrics.write('class;tp;fn;fp;tn\n');
 		for (var classId = 0; classId < allClasses.length; ++classId) {
@@ -328,6 +363,59 @@ function computeMetrics(results, serviceName) {
 				metrics['totFp'], metrics['totTn']);
 		streamMetrics.write(row);
 		
+		streamMetrics.end();
+	});
+}
+
+function computeEntitiesMetrics(results, serviceName) {
+	var numberOfExamples = 0;
+	var summationAccuracy = 0;
+	var summationPrecision = 0;
+	var summationRecall = 0;
+	for (var index = 0; index < results.length; ++index) {
+		var services = results[index];
+		for (var indexTwo = 0; indexTwo < services.length; ++indexTwo) {
+			var service = services[indexTwo];
+			if (service.service !== serviceName){
+				continue;
+			}
+			numberOfExamples ++;
+			var entitiesToFind = convertToSet(service.entitiesToFind);
+			var entitiesFound = convertToSet(service.entitiesFound);
+			let union = new Set([...entitiesToFind, ...entitiesFound]);
+			let intersection = new Set([...entitiesToFind].filter(x => entitiesFound.has(x)));
+			// accuracy
+			if (union.size == 0){
+				summationAccuracy +=1;
+			}
+			else{
+				summationAccuracy = summationAccuracy + (intersection.size / union.size);
+			}
+			// precision
+			if (entitiesFound.size == 0){
+				summationPrecision += 1
+			}
+			else{
+				summationPrecision = summationPrecision + (intersection.size / entitiesFound.size);
+			}
+			// recall
+			if (entitiesToFind.size == 0){
+				summationRecall += 1
+			}
+			else{
+				summationRecall = summationRecall + (intersection.size / entitiesToFind.size);
+			}
+		}
+	}
+	var accuracy = 1/numberOfExamples * summationAccuracy;
+	var precision = 1/numberOfExamples * summationPrecision;
+	var recall = 1/numberOfExamples * summationRecall;
+	
+	// save metrics
+	var streamMetrics = fs.createWriteStream('../metrics_entities_' + serviceName + '.csv');
+	streamMetrics.once('open', function(fd) {
+		streamMetrics.write('accuracy;precision;recall\n');
+		streamMetrics.write(accuracy +';' + precision + ';' + recall);
 		streamMetrics.end();
 	});
 }
@@ -352,10 +440,14 @@ function test() {
 					concurrency : 1
 				}).then(function(results) {
 			saveResults(results);
-			computeMetrics(results, 'MS CHATBOT');
-			computeMetrics(results, 'API');
-			computeMetrics(results, 'WIT');
-			computeMetrics(results, 'LUIS');
+			computeIntentsMetrics(results, 'API');
+			computeIntentsMetrics(results, 'LUIS');
+			computeIntentsMetrics(results, 'WIT');
+			computeIntentsMetrics(results, 'MS CHATBOT');
+			computeEntitiesMetrics(results, 'API');
+			computeEntitiesMetrics(results, 'LUIS');
+			computeEntitiesMetrics(results, 'WIT');
+			computeEntitiesMetrics(results, 'MS CHATBOT');
 		}, function(error) {
 			reject(error);
 		});
